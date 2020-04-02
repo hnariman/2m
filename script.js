@@ -9,12 +9,6 @@ function error(variable) {
   alert(`${variable}, is not suitable`);
 }
 
-
-const button = document.querySelector('button');
-button.addEventListener('click', collectData);
-
-
-
 // const deposit = 100000;
 // const payment = 0;
 // const period = 12;
@@ -30,7 +24,7 @@ function errorCheck(){
 }
 
 // реализующий свойства и функциональность вклада, который хотел бы открыть клиент. 
-class Deposit {
+class Application {
   constructor(deposit, payment, period, currency){
     this.deposit = deposit;
     this.payment = payment;
@@ -42,12 +36,27 @@ class Deposit {
     this.payment = +document.querySelector('#payment').value;
     this.period = +document.querySelector('#period').value;
     this.currency = document.querySelector('#currency').value.toString().toLowerCase();
-    console.log(deposit, payment, period, currency);
+    if (this.errorCheck();) {
+      console.log('no errors');
+      console.log(this.deposit, this.payment, this.period, this.currency);
+    }
   }
-}
+
+  errorCheck(){
+    if (this.deposit <0 ) { this.error(this.deposit);};
+    if (this.payment <0 ) { this.error(this.payment);};
+    if (this.period <0 && this.period != Math.trunc(this.period) ) { error(this.period);};
+    if (this.currency !== 'rub' || this.currency !== 'usd') { error(currency);};
+  }
+  error(variable) {
+    console.log(`${variable} is not suitable for further processing`);
+    alert(`${variable}, is not suitable`);
+    return false;
+  }
+  
 }
 
-const user1 = new Deposit(deposit, payment, period, currency);
+const user1 = new Application (deposit, payment, period, currency);
 console.log(user1);
 
 //  реализующий свойства и функциональность банковского предложения по вкладу
@@ -59,13 +68,15 @@ class Calculator { constructor(){} };
 
 //  реализующий обработку нажатия на кнопку, получение введенных данных
 //  и отображение результатов.
-class Application { 
+class Deposit { 
   constructor(deposit, payment, period, currency) {
 
   } };
 
+const app = new Application;
 
-
+const button = document.querySelector('button');
+button.addEventListener('click', app.collectData);
 
 // REQUIRED OUTPUT:
 // Еврофинанс Моснарбанк	Классический	6.95	107176
