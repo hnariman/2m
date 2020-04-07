@@ -6,16 +6,8 @@ class Application { // _______get user input, button event, show result in HTML
     this.period =  period;
     this.currency = currency;
     this.array = array;
-    this.createObject = () => {
-      return {
-        deposit: this.deposit,
-        payment: this.payment,
-        period: this.period,
-        currency: this.currency
-      }
-    };
   }
-  collectData() { // _______collect user inputs 
+  collectData = () => { // _______collect user inputs 
     this.deposit = +document.querySelector('#deposit').value;  
     this.payment = +document.querySelector('#payment').value;
     this.period = +document.querySelector('#period').value;
@@ -25,18 +17,20 @@ class Application { // _______get user input, button event, show result in HTML
     if ( this.payment <0 ) { alert( this.payment + ' is wrong value' ) }; 
     if ( this.period <0 && this.period != Math.trunc( this.period )  ) { alert( this.period + ' is wrong value' )};
     if ( !(this.currency === 'rub' ) &&  !(this.currency === 'usd' ) ) { alert( this.currency + ' is wrong value' )};
-
+    createObject;
+  }
 // PROBLEMA: Не вызывается метод для содания объекта с параметрами (ранее
 // забранными из инпутов). Просто говорит, что такой функции нету (хотя
 // пробовал и через функцию и пробовал через стрелочную итд.) 
 //  идея в том чтобы создать объект и передать его в другой класс
-    this.createObject();
-//    console.log(this.deposit, this.payment, this.period, this.currency);
-//    const usrDepo = new Deposit(this.deposit, this.payment, this.period, this.currency);
-//    console.log(usrDepo);
-//    const prod = new BankProduct(array, deposit);
-//    console.log(prod.filterAll());
-  }
+    createObject = () => {
+      console.log(this.deposit, this.payment, this.period, this.currency);
+      const usrDepo = new Deposit(this);
+      console.log(usrDepo);
+      const prod = new BankProduct(array, deposit);
+      console.log(prod.filterAll());
+    }
+  
   showResult(bankName, deposit, rate, result){
     const mainElement = document.querySelector('.result table');
     mainElement.innerHTML += `<tr>
@@ -54,15 +48,16 @@ class BankProduct { // find suitable bank product from the given data
     this.array = array;
     this.inquiry = inquiry;
   }
-  filterByCurrency(array)   { return array.filter(x => x.currency == this.inquiry.currency); }
-  filterByCanDeposit(array) { return array.filter(x => x.canDeposit == true); }
-  filterByPeriod(array)     { return array.filter(x => x.termMax >= this.inquiry.period && x.termMin <= this.inquiry.period); }
-  filterBySum(array)        { return array.filter(x => x.sumMax >= this.inquiry.deposit && x.sumMin <= this.inquiry.deposit); }
-  filterAll(array) {
+  filterByCurrency    = (array) => { return array.filter(x => x.currency == this.inquiry.currency); }
+  filterByCanDeposit  = (array) => { return array.filter(x => x.canDeposit == true); }
+  filterByPeriod      = (array) => { return array.filter(x => x.termMax >= this.inquiry.period && x.termMin <= this.inquiry.period); }
+  filterBySum         = (array) => { return array.filter(x => x.sumMax >= this.inquiry.deposit && x.sumMin <= this.inquiry.deposit); }
+  filterAll           = (array) => {
     let result = this.filterByCanDeposit(this.array);
     result = this.filterByPeriod(result);
     result = this.filterByCurrency(result);
     result = this.filterBySum(result);
+    console.log(result);
     return result;
     // return this.filterBySum(filterByCurrency(filterByPeriod(filterByCanDeposit(this.array))));
   }
@@ -103,7 +98,7 @@ const button = document.querySelector('button');
 button.addEventListener('click', app.collectData);
 
 // TEST:
-const usrDepo = new Deposit(app.createObject());
-console.log(usrDepo);
-const prod = new BankProduct(array, deposit);
-console.log(prod.filterAll());
+// const usrDepo = new Deposit(app.createObject());
+// console.log(usrDepo);
+// const prod = new BankProduct(array, deposit);
+// console.log(prod.filterAll());
