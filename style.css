@@ -23,4 +23,48 @@ html {
   width: 100%;
   display: flex;
   align-self: flex-end;
+  padding:4px;
+  font-size:14px;
+  font-weight: bold;
+}
+
+.result {
+  width:70%;
+  margin: 10px auto;
+  border-radius: 10px;
+  padding: 20px;
+  justify-content:center;
+}
+
+.result table {
+  margin:auto;
+  align: center;
+  border: 1px solid black;
+  border-collapse: collapse;
+  text-align:center;
+}
+
+
+.result th, td {
+  padding:15px;
+  border: 1px solid black;
+}
+
+.result th {
+  background-color:green;
+  font-size:14px;
+  color:white;
+}
+
+#submit {
+  background-color:green;
+  border-radius: 4px;
+  padding: 5px;
+  margin:5px;
+  color:white;
+  font-size:14px;
+}
+
+.hidden {
+  visibility:hidden;
 }

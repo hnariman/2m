@@ -13,7 +13,7 @@
     <main>
       <section class="user-input">
         <label for="">Начальная сумма
-          <input class="input-field" type="number"  id="deposit">
+          <input class="input-field" type="number"  id="deposit"  step='100'>
         </label>
         <label for="">Сумма ежемесячного пополнения 
           <input class="input-field" type="number"  id="payment">
@@ -26,8 +26,8 @@
         </label>
         <button id="submit" type="submit">Подобрать</button>
       </section>
-      <section class="result">
-        <table>
+      <section class="result ">
+        <table class="hidden">
           <tr>
             <th>Название банка </th>
             <th>Вклад </th>

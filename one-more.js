@@ -7,34 +7,36 @@ class Application {
     this.currency = currency; 
   }
   getData = () => {
+    //receive input values
     this.deposit = +document.querySelector('#deposit').value;
     this.payment = +document.querySelector('#payment').value;
     this.period = +document.querySelector('#period').value;
     this.currency = document.querySelector('#currency').value;
-    this.currency = this.currency.toLowerCase();
-    // Input error check
-    if ( this.deposit <0 ) { alert( this.deposit + ' is wrong value' ) };
-    if ( this.payment <0 ) { alert( this.payment + ' is wrong value' ) }; 
-    if ( this.period <0 && this.period != Math.trunc( this.period )  ) { alert( this.period + ' is wrong value' )};
-    if ( !(this.currency === 'rub' ) &&  !(this.currency === 'usd' ) ) { alert( this.currency + ' is wrong value' )};
-    console.log('Application Class VALUE CHECK:'); // to be removed
-    console.log(this);                // to be removed
-    // console.log(array);                // to be removed
+    this.currency = this.currency.toUpperCase();
+    // Input values error check
+    if ( this.deposit < 0 ) { alert( this.deposit + ' is wrong value' ) };
+    if ( this.payment < 0 ) { alert( this.payment + ' is wrong value' ) }; 
+    if ( this.period < 0 && this.period != Math.trunc( this.period )  ) { alert( this.period + ' is wrong value' )};
+    if ( !(this.currency === 'RUB' ) &&  !(this.currency === 'USD' ) ) { alert( this.currency + ' is wrong value' )};
+
     const deposit = new Deposit(this);
-    console.log(deposit);                // to be removed
-
     const bankProduct = new BankProduct(array, deposit);
-    console.log(bankProduct);                // to be removed
     bankProduct.filter();
-    this.render();
-
+    const calc = new Calculator(bankProduct);
+    calc.calculateFV();
+    this.render(calc);
   }
-  render = () => {
-    const table = document.querySelector('.result');
-    console.log(table);
-    // let data = `<tr> <td>${bank}</td> <td>${type}</td> <td>${finalDeposit}</td> <td></td> </tr>`;
-    let data = ' <tr> <td>some</td> <td>more</td> <td>new</td> <td>information</td> </tr> '                // to be removed
-    table.innerHTML += data;
+  render = (calc) => {
+    const table = document.querySelector('table');
+    table.classList.add('hidden');
+    table.classList.remove('hidden');
+    calc.array.forEach( x => {
+      let data = `<tr> <td>${x.bankName}</td>
+      <td>${x.investName}</td> 
+      <td>${x.incomeType}</td> 
+      <td>${x.finalValue} ${x.currency}</td> </tr>`;
+      table.innerHTML += data;
+    })
   }
 }
 
@@ -50,54 +52,44 @@ class Deposit{
 
 // свойства и функциональность банковского предложения по вкладу
 class BankProduct{
-  constructor(array, inquiry) {
+  constructor(array, deposit) {
     this.array = array;
-    this.inquiry = inquiry;
+    this.deposit = deposit;
   }
   filter = () => {
-    let result = this.array.filter(x => x.currency == this.inquiry.currency);
-    result = this.array.filter(x => x.canDeposit == true);
-    result = this.array.filter(x => x => x.termMax >= this.inquiry.period && x.termMin <= this.inquiry.period);
-    result = this.array.filter(x => x.sumMax >= this.inquiry.deposit && x.sumMin <= this.inquiry.deposit); 
-    this.array = result;
-    console.log(this.array);                // to be removed
-    result.map(x => console.log(x));
+    // filter out products not suitable for the user
+    this.array = this.array.filter( x => x.currency   === this.deposit.currency);
+    this.array = this.array.filter( x => x.canDeposit === true);
+    this.array = this.array.filter( x => x.termMin <= this.deposit.period || x.termMin == null);
+    this.array = this.array.filter( x => x.termMax >= this.deposit.period || x.termMax == null);
+    this.array = this.array.filter( x => x.sumMax >= this.deposit.deposit || x.sumMax == null);
+    this.array = this.array.filter( x => x.sumMin <= this.deposit.deposit || x.sumMin == null);
   }
 }
-
 // инициализирующийся массивом BankProduct и вычисляющий наиболее выгодный вариант.
 class Calculator{
   constructor(obj) {
-    this.deposit = obj.deposit;
-    this.payment = obj.payment;
-    this.period = obj.period;
-    this.rate = obj.rate;
+    this.array = obj.array;
+    this.deposit = obj.deposit.deposit;
+    this.payment = obj.deposit.payment;
+    this.period = obj.deposit.period;
+    this.currency = obj.deposit.currency;
   }
-  calculateFutureValue() {
+  calculateFV = () => {
     let result = this.deposit;
-    for (let increment = 1; increment < this.months; increment++) {
-      result += this.deposit * this.rate;
-      result += this.payment;
-    }
-    return result;
+    this.array.map(x => {
+      for (let increment = 1; increment < this.period; increment++) {
+        result += this.deposit * x.incomeType/12/100;
+        result += this.payment;
+        result = Math.trunc(result);
+        x.finalValue = +result;
+      }
+      return x; 
+    });
+    this.array = this.array.sort( (a, b) => a.finalValue < b.finalValue );
+    this.array = this.array.filter(x => x.finalValue == this.array[0].finalValue);
+    return this.array;
   }
 }
 const application = new Application;
-
 document.querySelector('button').addEventListener('click', application.getData);
-
-
-
-
-// function calculateFutureValue(deposit, days, rate, payment) {
-//     const month = days / 30;
-//     const monthlyRate = rate / 12 / 100;
-//     let final = deposit;
-// 
-//     for (let increment = 1; increment < month; increment++) {
-//         final += deposit * monthlyRate;
-//         final += payment;
-//     }
-//     output(final, result);
-//     return final;
-}
