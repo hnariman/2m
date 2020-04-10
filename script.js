@@ -29,14 +29,19 @@ class Application {
   render = (calc) => {
     const table = document.querySelector('table');
     table.classList.add('hidden');
-    table.classList.remove('hidden');
+
+    table.innerHTML = '';
+    let data = '';
+    const tableHeader = ` <tr> <th>Название банка </th> <th>Вклад </th> <th>Процент</th>
+            <th>Итоговая сумма по истечении срока </th> </tr> `;
+    calc.array.length === 0 ? alert('Нет подходящих вариантов') :
     calc.array.forEach( x => {
-      let data = `<tr> <td>${x.bankName}</td>
-      <td>${x.investName}</td> 
-      <td>${x.incomeType}</td> 
-      <td>${x.finalValue} ${x.currency}</td> </tr>`;
+      data += `<tr> <td>${x.bankName}</td> <td>${x.investName}</td> 
+      <td>${x.incomeType}</td> <td>${x.finalValue} ${x.currency}</td> </tr>`;
+      table.innerHTML = tableHeader;
       table.innerHTML += data;
     })
+    table.classList.remove('hidden');
   }
 }
 
@@ -57,9 +62,15 @@ class BankProduct{
     this.deposit = deposit;
   }
   filter = () => {
-    // filter out products not suitable for the user
-    this.array = this.array.filter( x => x.currency   === this.deposit.currency);
-    this.array = this.array.filter( x => x.canDeposit === true);
+    // filter out products suitable for the user
+    this.array = this.array.filter( x => x.currency === this.deposit.currency);
+    if (this.deposit.payment == 0) {
+      this.array = this.array.filter( x => x.canDeposit === false )
+    } else {
+      this.array = this.array.filter( x => x.canDeposit === true )
+    }
+//     this.payment === 0 ?
+//       this.array.filter(x => x.canDeposit === false) : this.array = this.array.filter( x => x.canDeposit === true );
     this.array = this.array.filter( x => x.termMin <= this.deposit.period || x.termMin == null);
     this.array = this.array.filter( x => x.termMax >= this.deposit.period || x.termMax == null);
     this.array = this.array.filter( x => x.sumMax >= this.deposit.deposit || x.sumMax == null);
@@ -86,8 +97,8 @@ class Calculator{
       }
       return x; 
     });
-    this.array = this.array.sort( (a, b) => a.finalValue < b.finalValue );
-    this.array = this.array.filter(x => x.finalValue == this.array[0].finalValue);
+    this.array = this.array.sort( (a, b) => (a.incomeType < b.incomeType )? 1: -1);
+    this.array = this.array.filter(x => x.incomeType == this.array[0].incomeType);
     return this.array;
   }
 }
